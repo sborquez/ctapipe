@@ -30,6 +30,7 @@ dependencies:
   - scikit-learn
   - scipy
   - setuptools
+  - sortedcontainers
   - sphinx
   - sphinx-automodapi
   - sphinx_rtd_theme

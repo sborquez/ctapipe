@@ -56,6 +56,7 @@ setup(
         'numpy~=1.16',
         'pandas>=0.24.0',
         'psutil',
+        'sortedcontainers',
         'scikit-learn',
         'scipy~=1.2',
         'tables~=3.4',
