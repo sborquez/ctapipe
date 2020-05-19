@@ -370,8 +370,6 @@ class SimTelEventSource(EventSource):
             telescope_events = array_event["telescope_events"]
             tracking_positions = array_event["tracking_positions"]
             for tel_id, telescope_event in telescope_events.items():
-                tel_index = self.file_.header["tel_id"].tolist().index(tel_id)
-
                 adc_samples = telescope_event.get("adc_samples")
                 if adc_samples is None:
                     adc_samples = telescope_event["adc_sums"][:, :, np.newaxis]
@@ -380,11 +378,17 @@ class SimTelEventSource(EventSource):
                 mc = data.mc.tel[tel_id]
                 mc.dc_to_pe = array_event["laser_calibrations"][tel_id]["calib"]
                 mc.pedestal = array_event["camera_monitorings"][tel_id]["pedestal"]
-                mc.true_image = (
-                    array_event.get("photoelectrons", {})
-                    .get(tel_index, {})
-                    .get("photoelectrons", np.zeros(n_pixels, dtype="float32"))
-                )
+
+                pe = array_event.get("photoelectrons", {}).get(tel_id - 1)
+                if pe is not None:
+                    mc.true_image = pe["photoelectrons"]
+                    mc.mean_pe_time = np.array([
+                        np.mean(t) if len(t) > 0 else np.nan
+                        for t in pe["time"]
+                    ]).astype('float32')
+                else:
+                    mc.true_image = np.full(-1, dtype='int32')
+                    mc.mean_pe_time = np.full(np.nan, dtype='float32')
 
                 self._fill_event_pointing(
                     data.pointing.tel[tel_id],

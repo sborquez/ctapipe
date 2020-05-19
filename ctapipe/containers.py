@@ -385,6 +385,7 @@ class MCCameraEventContainer(Container):
         "Numpy array of camera image in PE as simulated before noise has been added. "
         "Shape: (n_pixel)",
     )
+    mean_pe_time = Field(None, 'Mean arrival time of pe in each pixel')
 
     # TODO: should move dc_to_pe and pedestal to a MC Monitoring Container,
     # so they are not written for each event.
